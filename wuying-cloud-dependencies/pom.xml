@@ -28,6 +28,8 @@
         <wuying-cloud.version>1.0.0-SNAPSHOT</wuying-cloud.version>
         <mybatis-spring-boot-starter.version>2.1.1</mybatis-spring-boot-starter.version>
         <lombok.version>1.18.12</lombok.version>
+        <mybatis-plus-boot-starter.version>3.4.0</mybatis-plus-boot-starter.version>
+        <mysql-connector-java.version>8.0.25</mysql-connector-java.version>
     </properties>
 
     <dependencyManagement>
@@ -39,9 +41,39 @@
             </dependency>
 
             <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus-boot-starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-connector-java.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.wuying.cloud</groupId>
+                <artifactId>wuying-cloud-commons</artifactId>
+                <version>${wuying-cloud.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.wuying.cloud</groupId>
+                <artifactId>wuying-cloud-context</artifactId>
+                <version>${wuying-cloud.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.wuying.cloud</groupId>
+                <artifactId>wuying-cloud-starter-web</artifactId>
+                <version>${wuying-cloud.version}</version>
             </dependency>
 
             <dependency>

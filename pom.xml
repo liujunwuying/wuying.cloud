@@ -25,8 +25,11 @@
     <!--包含模块-->
     <modules>
         <module>wuying-cloud-dependencies</module>
-        <module>wuying-cloud-transaction-async</module>
+        <module>wuying-cloud-commons</module>
+        <module>wuying-cloud-context</module>
         <module>wuying-cloud-mybatis-support</module>
+        <module>wuying-cloud-transaction-async</module>
+        <module>wuying-cloud-starter-web</module>
     </modules>
 
     <!--依赖管理-->

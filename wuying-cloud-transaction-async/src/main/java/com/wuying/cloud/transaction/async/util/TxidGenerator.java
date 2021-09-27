@@ -1,5 +1,6 @@
 package com.wuying.cloud.transaction.async.util;
 
+import com.wuying.commons.utils.ServiceInfoUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.lang.management.ManagementFactory;
@@ -18,9 +19,8 @@ public class TxidGenerator {
     private static String pid;
 
     static {
-        String[] info = ManagementFactory.getRuntimeMXBean().getName().split("@");
-        hostname = StringUtils.leftPad(String.valueOf(Math.abs(info[1].hashCode())), 10, "0");
-        pid = StringUtils.leftPad(info[0], 5, "0");
+        hostname = StringUtils.leftPad(String.valueOf(Math.abs(ServiceInfoUtils.getHostname().hashCode())), 10, "0");
+        pid = StringUtils.leftPad(ServiceInfoUtils.getProcessId(), 5, "0");
     }
 
     public static synchronized String generate() {
