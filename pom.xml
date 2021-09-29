@@ -30,6 +30,7 @@
         <module>wuying-cloud-mybatis-support</module>
         <module>wuying-cloud-transaction-async</module>
         <module>wuying-cloud-starter-web</module>
+        <module>wuying-cloud-redis-support</module>
     </modules>
 
     <!--依赖管理-->

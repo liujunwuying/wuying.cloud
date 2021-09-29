@@ -63,6 +63,23 @@ public class WuyingLogger {
         getCallerLogger().info(msg, t);
     }
 
+    public static void warn(String msg) {
+        getCallerLogger().warn(msg);
+    }
+
+    public static void warn(String format, Object arg) {
+        getCallerLogger().warn(format, arg);
+    }
+
+    public static void warn(String format, Object... arguments) {
+        getCallerLogger().warn(format, arguments);
+    }
+
+    public static void warn(String msg, Throwable t){
+        getCallerLogger().warn(msg, t);
+    }
+
+
     public static void debug(String msg) {
         getCallerLogger().debug(msg);
     }

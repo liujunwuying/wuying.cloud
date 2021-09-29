@@ -3,6 +3,7 @@ package com.wuying.cloud.mybatis.support.interceptor;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.plugin.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -14,9 +15,10 @@ import java.util.Properties;
  * @since 1.0.0
  * @date 2021-09-24
  */
+@RefreshScope
 @ConfigurationProperties(prefix = "wuying.cloud.mybatis.support")
 @Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class})})
-public class MybatisMaxRowsInterceptor implements Interceptor {
+public class MybatisRowLimitInterceptor implements Interceptor {
 
     private Integer maxRow = 10000;
 
