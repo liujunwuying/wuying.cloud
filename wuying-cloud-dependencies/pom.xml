@@ -81,6 +81,18 @@
                 <artifactId>wuying-cloud-mybatis-support</artifactId>
                 <version>${wuying-cloud.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.wuying.cloud</groupId>
+                <artifactId>wuying-cloud-redis-support</artifactId>
+                <version>${wuying-cloud.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.wuying.cloud</groupId>
+                <artifactId>wuying-cloud-transaction-async</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
