@@ -1,13 +1,11 @@
 package com.wuying.cloud.transaction.async.proxy;
 
+import com.wuying.cloud.context.holder.ApplicationContextHolder;
 import com.wuying.cloud.transaction.async.domain.Transaction;
 import com.wuying.cloud.transaction.async.enums.RetryIntervalLevel;
-import com.wuying.cloud.transaction.async.enums.TransactionLevel;
-import com.wuying.cloud.transaction.async.holder.ApplicationContextHolder;
 import com.wuying.cloud.transaction.async.holder.ThreadLocalHolder;
-import com.wuying.cloud.transaction.async.util.ReflectUtil;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.core.env.Environment;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.util.Assert;
 
 /**
  * 事务代理类
@@ -20,16 +18,16 @@ public class TransactionAsyncProxy {
 
     private TransactionAsyncProxy() {
         ThreadLocalHolder.getGxid().remove();
-        String className = Thread.currentThread().getStackTrace()[3].getClassName();
-        String methodName = Thread.currentThread().getStackTrace()[3].getMethodName();
-        Environment environment = ApplicationContextHolder.getApplicationContext().getBean(Environment.class);
-        String maxRetryTime = environment.getProperty("wuying.cloud.transaction.async.maxRetryTimes", "34");
-        String level = environment.getProperty("wuying.cloud.transaction.async.level", "0");
+        StackTraceElement invokeElement = Thread.currentThread().getStackTrace()[3];
+        String className = invokeElement.getClassName();
+        String methodName = invokeElement.getMethodName();
+        String maxRetryTime = ApplicationContextHolder.getProperty("wuying.cloud.transaction.async.maxRetryTimes", "34");
         transaction = Transaction.builder()
                 .coordinator(className + "." + methodName)
                 .maxRetryTimes(Integer.parseInt(maxRetryTime))
-                .level(TransactionLevel.toEnum(Integer.parseInt(level)))
-                .retryInterval(RetryIntervalLevel.quick.getInterval()).build();
+                .retryInterval(RetryIntervalLevel.quick.getInterval())
+                .applicationName(ApplicationContextHolder.getServiceInstanceInfo().getServiceName())
+                .build();
     }
 
     public static TransactionAsyncProxy create() {
@@ -41,20 +39,30 @@ public class TransactionAsyncProxy {
         return this;
     }
 
-    public TransactionAsyncProxy level(TransactionLevel transactionLevel) {
-        transaction.setLevel(transactionLevel);
-        return this;
-    }
-
-    public Object proxyInterface(Object bean) {
-        if (AopUtils.isCglibProxy(bean)) {
-            bean = ReflectUtil.getCglibProxyTargetObject(bean);
-        }
-        JdkDynamicProxy proxy = new JdkDynamicProxy(bean, transaction);
-        return proxy.generateProxy();
-    }
-
+    /**
+     * 生成代理对象 只支持FeignClient
+     * @param bean 原对象
+     * @param methodPrefix 代理方法前缀
+     * @return
+     */
     public Object proxyClass(Object bean, String... methodPrefix) {
-        return new CglibProxy(bean, transaction, methodPrefix).generateProxy();
+        Assert.notNull(bean, "入参为空");
+        Class<?> beanType = findBeanType(bean);
+        Assert.notNull(beanType, "调用类需包含FeignClient注解");
+        return new CglibProxy(bean, beanType, transaction, methodPrefix).generateProxy();
+    }
+
+    /**
+     * 获取调用类类型
+     * @param bean 调用对象
+     * @return
+     */
+    public Class<?> findBeanType(Object bean) {
+        for(Class<?> clazz : bean.getClass().getInterfaces()) {
+            if (clazz.isAnnotationPresent(FeignClient.class)) {
+                return clazz;
+            }
+        }
+        return null;
     }
 }

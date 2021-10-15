@@ -64,51 +64,27 @@ public class ApplicationContextHolder implements ApplicationContextAware, Enviro
      * getBean by type
      */
     public static <T> T getBean(Class<T> requiredType) {
-        if (applicationContext != null) {
-            try {
-                return applicationContext.getBean(requiredType);
-            } catch (BeansException beansException) {
-                WuyingLogger.error("getBean error, class:" + requiredType.getName(), beansException);
-            }
-        }
-        return null;
+        return applicationContext.getBean(requiredType);
     }
 
     /**
      * getBean by name
      */
-    public Object getBean(String name) {
-        if (applicationContext != null) {
-            try {
-                return applicationContext.getBean(name);
-            } catch (BeansException beansException) {
-                WuyingLogger.error("getBean error, name:" + name, beansException);
-            }
-        }
-        return null;
+    public static Object getBean(String name) {
+        return applicationContext.getBean(name);
     }
 
     /**
      * getBean by name and type
      */
     public static <T> T getBean(String name, Class<T> requiredType) {
-        if (applicationContext != null) {
-            try {
-                return applicationContext.getBean(name, requiredType);
-            } catch (BeansException beansException) {
-                WuyingLogger.error("getBean error, name:" + name + ", class:" + requiredType.getName(), beansException);
-            }
-        }
-        return null;
+        return applicationContext.getBean(name, requiredType);
     }
 
     /**
      * getProperty by key
      */
     public static String getProperty(String key) {
-        if (environment == null) {
-            return null;
-        }
         return environment.getProperty(key);
     }
 
@@ -116,9 +92,6 @@ public class ApplicationContextHolder implements ApplicationContextAware, Enviro
      * getProperty with defaultValue
      */
     public static String getProperty(String key, String defaultValue) {
-        if (environment == null) {
-            return null;
-        }
         return environment.getProperty(key, defaultValue);
     }
 }

@@ -3,7 +3,6 @@ package com.wuying.cloud.transaction.async.dao;
 import com.wuying.cloud.transaction.async.domain.Participant;
 import com.wuying.cloud.transaction.async.domain.Transaction;
 import com.wuying.cloud.transaction.async.enums.RetryIntervalLevel;
-import com.wuying.cloud.transaction.async.enums.TransactionLevel;
 import com.wuying.cloud.transaction.async.enums.TransactionStatus;
 import com.wuying.cloud.transaction.async.util.JsonUtil;
 import org.springframework.jdbc.core.PreparedStatementCallback;
@@ -103,7 +102,7 @@ public class TransactionAsyncDao {
         Assert.notNull(transaction, "transaction入参为空");
         Object[] values = new Object[]{transaction.getTxid(), transaction.getGxid(), transaction.getApplicationName(),
           transaction.getCoordinator(), transaction.getRetryInterval(), transaction.getMaxRetryTimes(),
-          transaction.getLevel().getValue(), transaction.getParticipant().getBean(),
+          transaction.getParticipant().getBeanName(),
           transaction.getParticipant().getMethod(), JsonUtil.writeValueAsString(transaction.getParticipant().getParam()),
           JsonUtil.writeValueAsString(transaction.getParticipant().getParamTypes()), transaction.getParticipant().getRetriedTimes(),
           transaction.getParticipant().getStatus().getValue(), transaction.getParticipant().getStatusText(),
@@ -186,8 +185,8 @@ public class TransactionAsyncDao {
      */
     private Transaction buildTransactionFromResultSet(ResultSet resultSet) throws SQLException {
         Participant participant = Participant.builder()
-                .bean(resultSet.getString("bean"))
-                .method(resultSet.getString("method"))
+                .beanName(resultSet.getString("bean"))
+                //.method(resultSet.getString("method"))
                 .createTime(resultSet.getLong("create_time"))
                 .lastUpdateTime(resultSet.getLong("last_update_time"))
                 .retriedTimes(resultSet.getInt("retried_times"))
@@ -215,7 +214,6 @@ public class TransactionAsyncDao {
                 .retryInterval(resultSet.getInt("retry_interval"))
                 .txid(resultSet.getString("txid"))
                 .applicationName(resultSet.getString("application_name"))
-                .level(TransactionLevel.toEnum(resultSet.getInt("transaction_level")))
                 .build();
     }
 

@@ -1,11 +1,11 @@
 package com.wuying.cloud.transaction.async.proxy;
 
 import com.wuying.cloud.transaction.async.domain.Transaction;
-import com.wuying.cloud.transaction.async.enums.TransactionLevel;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Method;
 
@@ -17,18 +17,21 @@ import java.lang.reflect.Method;
  */
 public class CglibProxy extends AbstractTransactionProxy implements MethodInterceptor {
 
-    private Enhancer enhancer = new Enhancer();
+    private final Enhancer enhancer = new Enhancer();
 
-    private String[] methodPrefixArr;
+    /**
+     * 需要代理的方法前缀
+     */
+    private final String[] methodPrefixArr;
 
-    public CglibProxy(Object readSubject, Transaction transaction, String... methodPrefixArr) {
-        super(readSubject, transaction);
+    public CglibProxy(Object readSubject, Class<?> beanType, Transaction transaction, String... methodPrefixArr) {
+        super(readSubject, beanType, transaction);
         this.methodPrefixArr = methodPrefixArr;
     }
 
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-        if (transaction.getLevel() != TransactionLevel.none && isProxyMethod(method.getName())) {
+        if (isProxyMethod(method.getName()) && isFeignMethod(method)) {
             return intercept(obj, method, args);
         } else {
             return method.invoke(realSubject, args);
@@ -43,6 +46,11 @@ public class CglibProxy extends AbstractTransactionProxy implements MethodInterc
         return enhancer.create();
     }
 
+    /**
+     * 判断方法是否需要代理
+     * @param methodName 方法名
+     * @return boolean
+     */
     private boolean isProxyMethod(String methodName) {
         if (this.methodPrefixArr != null && this.methodPrefixArr.length > 0) {
             for(String methodPrefix : methodPrefixArr) {
@@ -51,8 +59,20 @@ public class CglibProxy extends AbstractTransactionProxy implements MethodInterc
                 }
             }
             return false;
-        } else {
-            return true;
         }
+        return true;
+    }
+
+    /**
+     * 是否feign方法
+     * @param method 方法对象
+     * @return
+     */
+    private boolean isFeignMethod(Method method) {
+        return method.isAnnotationPresent(RequestMapping.class)
+                || method.isAnnotationPresent(PostMapping.class)
+                || method.isAnnotationPresent(GetMapping.class)
+                || method.isAnnotationPresent(DeleteMapping.class)
+                || method.isAnnotationPresent(PutMapping.class);
     }
 }

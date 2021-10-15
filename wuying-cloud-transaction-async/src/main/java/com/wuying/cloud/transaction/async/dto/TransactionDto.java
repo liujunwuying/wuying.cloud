@@ -1,8 +1,5 @@
 package com.wuying.cloud.transaction.async.dto;
 
-import com.wuying.cloud.transaction.async.domain.Participant;
-import com.wuying.cloud.transaction.async.enums.TransactionLevel;
-import com.wuying.cloud.transaction.async.enums.TransactionStatus;
 import lombok.Builder;
 import lombok.Data;
 
@@ -45,11 +42,6 @@ public class TransactionDto {
      * 最大重试次数
      */
     private Integer maxRetryTimes;
-
-    /**
-     * 事务级别
-     */
-    private Integer transactionLevel;
 
     /**
      * bean名称

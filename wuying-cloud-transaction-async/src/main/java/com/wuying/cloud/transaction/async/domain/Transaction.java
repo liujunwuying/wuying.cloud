@@ -1,6 +1,5 @@
 package com.wuying.cloud.transaction.async.domain;
 
-import com.wuying.cloud.transaction.async.enums.TransactionLevel;
 import lombok.Builder;
 import lombok.Data;
 
@@ -43,11 +42,6 @@ public class Transaction {
      * 最大重试次数
      */
     private int maxRetryTimes;
-
-    /**
-     * 事务级别
-     */
-    private TransactionLevel level;
 
     /**
      * 参与者

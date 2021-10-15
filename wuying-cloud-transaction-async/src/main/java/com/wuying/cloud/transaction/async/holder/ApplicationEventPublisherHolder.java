@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Component;
 
 /**
- * 事件发布者holder
+ * 事件发布holder
  * @author wuying
  * @since 1.0.0
  * @date 2021-09-15

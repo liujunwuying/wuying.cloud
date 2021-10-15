@@ -1,11 +1,11 @@
 package com.wuying.cloud.transaction.async.listener;
 
+import com.wuying.cloud.context.threadpool.NamedThreadFactory;
 import com.wuying.cloud.transaction.async.TransactionAsyncManager;
 import com.wuying.cloud.transaction.async.domain.Transaction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.wuying.cloud.transaction.async.properties.ThreadPoolProperties;
+import com.wuying.commons.logger.WuyingLogger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -25,42 +25,36 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class TransactionEventListener {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     private TransactionAsyncManager transactionAsyncManager;
 
-    @Value("{wuying.cloud.transaction.async.threadpool.coreSize:2}")
-    private int coreThreadSize;
-
-    @Value("{wuying.cloud.transaction.async.threadpool.maxSize:10}")
-    private int maxThreadSize;
-
-    @Value("{wuying.cloud.transaction.async.threadpool.queueSize:1000}")
-    private int queueSize;
+    @Autowired
+    private ThreadPoolProperties threadPoolProperties;
 
     private ThreadPoolExecutor threadPoolExecutor;
 
     @PostConstruct
     public void init() {
-        threadPoolExecutor = new ThreadPoolExecutor(coreThreadSize, maxThreadSize, 60L, TimeUnit.SECONDS, new LinkedBlockingDeque<>(queueSize));
+        threadPoolExecutor = new ThreadPoolExecutor(
+                threadPoolProperties.getCorePoolSize(),
+                threadPoolProperties.getMaximumPoolSize(),
+                threadPoolProperties.getKeepAliveTime(),
+                TimeUnit.SECONDS,
+                new LinkedBlockingDeque<>(threadPoolProperties.getQueueSize()),
+                new NamedThreadFactory("transaction-async-commit"));
     }
 
     @TransactionalEventListener
     public void handle(PayloadApplicationEvent<Transaction> event) {
         final Transaction transaction = event.getPayload();
 
-        try {
-            threadPoolExecutor.execute(()->{
-                try {
-                    transactionAsyncManager.commit(transaction);
-                } catch (Exception e) {
-                    logger.warn("TransactionEventListener.handle()", e);
-                }
-            });
-        } catch (Exception e) {
-            logger.warn("system busy, transaction[{}] abandon execute immediately, will execute a few mintes later", transaction.getTxid());
-        }
+        threadPoolExecutor.execute(()->{
+            try {
+                transactionAsyncManager.commit(transaction);
+            } catch (Exception e) {
+                WuyingLogger.error("TransactionEventListener.handle()", e);
+            }
+        });
     }
 
     @PreDestroy

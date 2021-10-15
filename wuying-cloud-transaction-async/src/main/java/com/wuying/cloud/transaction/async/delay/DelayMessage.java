@@ -25,9 +25,9 @@ public class DelayMessage implements Delayed {
      */
     private long executeTime;
 
-    public DelayMessage(Transaction transaction, long delayTime) {
+    public DelayMessage(Transaction transaction, long delayTimeMs) {
         this.transaction = transaction;
-        this.executeTime = System.currentTimeMillis() + delayTime;
+        this.executeTime = System.currentTimeMillis() + delayTimeMs;
     }
 
     @Override

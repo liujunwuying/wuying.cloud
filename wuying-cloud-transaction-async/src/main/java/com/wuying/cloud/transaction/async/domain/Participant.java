@@ -4,6 +4,8 @@ import com.wuying.cloud.transaction.async.enums.TransactionStatus;
 import lombok.Builder;
 import lombok.Data;
 
+import java.lang.reflect.Method;
+
 /**
  * 参与者类
  * @author wuying
@@ -17,12 +19,12 @@ public class Participant {
     /**
      * bean名称
      */
-    private String bean;
+    private String beanName;
 
     /**
-     * 方法名
+     * 方法
      */
-    private String method;
+    private Method method;
 
     /**
      * 参数
