@@ -9,8 +9,6 @@ import com.wuying.cloud.transaction.async.domain.Participant;
 import com.wuying.cloud.transaction.async.domain.Transaction;
 import com.wuying.cloud.transaction.async.holder.ThreadLocalHolder;
 
-import java.lang.reflect.Method;
-
 /**
  * invoker类
  * @author wuying
